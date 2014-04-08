@@ -1,17 +1,21 @@
 package com.cadcoder.LifeCycle;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class LifeCycleActivity extends Activity {
 
     private static final String TAG = "LifeCycleActivity";
+    private static EventListAdapter _adapter;
+
 
     /**
      * Fires a notification to the system
@@ -19,12 +23,18 @@ public class LifeCycleActivity extends Activity {
      * @param message
      */
     private void notify(String message) {
+        getAdapter(this).addEvent(new EventRecord(message));
 
-        Toast t = new Toast(getApplicationContext());
-        t.setText(message);
-        t.notify();
-
+        Toast t = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        t.show();
         Log.d(TAG, message);
+    }
+
+    private static EventListAdapter getAdapter(Context context) {
+        if (_adapter == null) {
+            _adapter = new EventListAdapter(context);
+        }
+        return _adapter;
     }
 
     /**
@@ -33,7 +43,10 @@ public class LifeCycleActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_life_cycle);
+
+        ListView view = (ListView) findViewById(R.id.eventList);
+        view.setAdapter(getAdapter(this));
         notify("onCreate");
     }
 
